@@ -230,6 +230,12 @@ section h2 {
     padding-bottom: 20px;
     border-bottom: #ccc solid 1px;
   }
+
+  .card:hover {
+    transform: none;
+    transition: none;
+    background: #0a4b8f;
+  }
 }
 
 .details-top img {
