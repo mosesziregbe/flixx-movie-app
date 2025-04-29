@@ -107,6 +107,15 @@ async function displayMovieDetails() {
 
   const movie = await fetchAPIData(`movie/${movieId}`);
 
+  // console.log(movie);
+
+  const { cast } = await fetchAPIData(`movie/${movieId}/credits`);
+
+  const firstFiveCastNames = cast
+    .slice(0, 5)
+    .map((actor) => actor.name)
+    .join(', ');
+
   // Overlay for background image
   displayBackgroundImage('movie', movie.backdrop_path);
 
@@ -143,6 +152,7 @@ async function displayMovieDetails() {
             <ul class="list-group">
               ${movie.genres.map((genre) => `<li>${genre.name}</li>`).join('')}
             </ul>
+            <p><strong>Cast: </strong>${firstFiveCastNames}</p> 
             <a href="#" target="_blank" class="btn">Visit Movie Homepage</a>
           </div>
         </div><div class="details-bottom">
@@ -158,6 +168,11 @@ async function displayMovieDetails() {
               movie.runtime
             } minutes</li>
             <li><span class="text-secondary">Status:</span> ${movie.status}</li>
+            <li><span class="text-secondary">Production ${
+              movie.production_countries.length === 1 ? 'Country' : 'Countries'
+            }:</span> ${movie.production_countries
+    .map((country) => `<span>${country.name}</span>`)
+    .join(', ')}</li>
           </ul>
           <h4>Production Companies</h4>
           <div class="list-group"> ${movie.production_companies
@@ -200,6 +215,15 @@ async function displayShowDetails() {
   const show = await fetchAPIData(`tv/${showId}`);
   // console.log(show);
 
+  const { cast } = await fetchAPIData(`tv/${showId}/aggregate_credits`);
+
+  const firstTenCastNames = cast
+    .slice(0, 10)
+    .map((actor) => actor.name)
+    .join(', ');
+
+  // console.log(firstTenCastNames);
+
   // Overlay for background image
   displayBackgroundImage('tv', show.backdrop_path);
 
@@ -234,6 +258,7 @@ async function displayShowDetails() {
             <ul class="list-group">
             ${show.genres.map((genre) => `<li>${genre.name}</li>`).join('')}
             </ul>
+            <p><strong>Cast: </strong>${firstTenCastNames}</p> 
             <a href="${
               show.homepage
             }" target="_blank" class="btn">Visit Show Homepage</a>
@@ -253,6 +278,11 @@ async function displayShowDetails() {
               }
             </li>
             <li><span class="text-secondary">Status:</span> ${show.status}</li>
+            <li><span class="text-secondary">Production ${
+              show.production_countries.length === 1 ? 'Country' : 'Countries'
+            }:</span> ${show.production_countries
+    .map((country) => `<span>${country.name}</span>`)
+    .join(', ')}</li>
           </ul>
           <h4>Production Companies</h4>
           <div class="list-group">${show.production_companies
