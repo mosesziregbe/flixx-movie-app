@@ -484,7 +484,7 @@ function displayPagination() {
 
 async function displayTrending() {
   const { results } = await fetchAPIData('trending/all/week');
-  console.log(results);
+  // console.log(results);
 
   results.forEach((item) => {
     const div = document.createElement('div');
@@ -664,7 +664,7 @@ function init() {
       displayShowDetails();
       break;
     case '/trending.html':
-      console.log('Trending Movies/Shows');
+      // console.log('Trending Movies/Shows');
       displayTrending();
       // console.log(getDate());
       break;
