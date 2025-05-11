@@ -49,7 +49,9 @@ async function displayPopularMovies() {
           <div class="card-body">
             <h5 class="card-title">${movie.title}</h5>
             <p class="card-text">
-              <small class="text-muted">Release: ${movie.release_date}</small>
+              <small class="text-muted">Release: ${getDate(
+                movie.release_date
+              )}</small>
             </p>
           </div>`;
 
@@ -89,7 +91,9 @@ async function displayPopularShows() {
           <div class="card-body">
             <h5 class="card-title">${show.name}</h5>
             <p class="card-text">
-              <small class="text-muted">Air Date: ${show.first_air_date}</small>
+              <small class="text-muted">Air Date: ${getDate(
+                show.first_air_date
+              )}</small>
             </p>
           </div>`;
 
@@ -144,7 +148,9 @@ async function displayMovieDetails() {
               <i class="fas fa-star text-primary"></i>
               ${movie.vote_average.toFixed(1)} / 10
             </p>
-            <p class="text-muted">Release Date: ${movie.release_date}</p>
+            <p class="text-muted">Release Date: ${getDate(
+              movie.release_date
+            )}</p>
             <p>
               ${movie.overview}
             </p>
@@ -250,7 +256,9 @@ async function displayShowDetails() {
               <i class="fas fa-star text-primary"></i>
               ${show.vote_average.toFixed(1)} / 10
             </p>
-            <p class="text-muted">Last Air Date: ${show.last_air_date}</p>
+            <p class="text-muted">Last Air Date: ${getDate(
+              show.last_air_date
+            )}</p>
             <p>
               ${show.overview}
             </p>
@@ -419,8 +427,8 @@ function displaySearchResults(results) {
             <p class="card-text">
               <small class="text-muted">Release: ${
                 global.search.type === 'movie'
-                  ? result.release_date
-                  : result.first_air_date
+                  ? getDate(result.release_date)
+                  : getDate(result.first_air_date)
               }</small>
             </p>
           </div>`;
@@ -471,6 +479,59 @@ function displayPagination() {
     displaySearchResults(results);
   });
 }
+
+// 11. Display Trending This Week
+
+async function displayTrending() {
+  const { results } = await fetchAPIData('trending/all/week');
+  console.log(results);
+
+  results.forEach((item) => {
+    const div = document.createElement('div');
+    div.classList.add('card');
+
+    div.innerHTML = `<div class="card">
+          <a href="${
+            item.media_type === 'movie' ? 'movie' : 'tv'
+          }-details.html?id=${item.id}">
+            ${
+              item.poster_path
+                ? `<img
+            src="https://image.tmdb.org/t/p/w500${item.poster_path}"
+            class="card-img-top"
+            alt="${item.title || item.name}"
+          />`
+                : `<img
+          src="images/no-image.jpg"
+          class="card-img-top"
+          alt="${item.title || item.name}"
+        />`
+            }
+          </a>
+          <div class="card-body">
+            <h5 class="card-title">${item.title || item.name}</h5>
+            <p class="card-text">
+              <small class="text-muted">${
+                item.media_type === 'movie' ? 'Release' : 'Air Date'
+              }: ${
+      item.release_date
+        ? getDate(item.release_date)
+        : getDate(item.first_air_date)
+    }</small>
+            </p>
+            <p class="card-text">
+              <small class="text-muted"><strong>User Score</strong>: ${
+                item.vote_average > 0
+                  ? `${item.vote_average.toFixed(1) * 10}%`
+                  : 'NR'
+              }</small>
+            </p>
+          </div>`;
+
+    document.querySelector('#popular-movies').appendChild(div);
+  });
+}
+
 // Global Functions
 
 // Fetch data from TMDB API
@@ -548,6 +609,29 @@ function addCommasToNumber(number) {
   return number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
 }
 
+// Get Date
+function getDate(date) {
+  const months = [
+    'Jan',
+    'Feb',
+    'Mar',
+    'Apr',
+    'May',
+    'Jun',
+    'Jul',
+    'Aug',
+    'Sep',
+    'Oct',
+    'Nov',
+    'Dec',
+  ];
+
+  const release_date = new Date(date);
+  return `${
+    months[release_date.getMonth()]
+  } ${release_date.getDate()}, ${release_date.getFullYear()}`;
+}
+
 // Show Alert
 function showAlert(message, className) {
   const alertEl = document.createElement('div');
@@ -578,6 +662,11 @@ function init() {
     case '/tv-details.html':
       // console.log('TV Details');
       displayShowDetails();
+      break;
+    case '/trending.html':
+      console.log('Trending Movies/Shows');
+      displayTrending();
+      // console.log(getDate());
       break;
     case '/search.html':
       // console.log('Search');
