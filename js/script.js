@@ -532,6 +532,58 @@ async function displayTrending() {
   });
 }
 
+// 12. Display Trending Today
+
+async function displayTrendingToday() {
+  const { results } = await fetchAPIData('trending/all/day');
+  // console.log(results);
+
+  results.forEach((item) => {
+    const div = document.createElement('div');
+    div.classList.add('card');
+
+    div.innerHTML = `<div class="card">
+          <a href="${
+            item.media_type === 'movie' ? 'movie' : 'tv'
+          }-details.html?id=${item.id}">
+            ${
+              item.poster_path
+                ? `<img
+            src="https://image.tmdb.org/t/p/w500${item.poster_path}"
+            class="card-img-top"
+            alt="${item.title || item.name}"
+          />`
+                : `<img
+          src="images/no-image.jpg"
+          class="card-img-top"
+          alt="${item.title || item.name}"
+        />`
+            }
+          </a>
+          <div class="card-body">
+            <h5 class="card-title">${item.title || item.name}</h5>
+            <p class="card-text">
+              <small class="text-muted">${
+                item.media_type === 'movie' ? 'Release' : 'Air Date'
+              }: ${
+      item.release_date
+        ? getDate(item.release_date)
+        : getDate(item.first_air_date)
+    }</small>
+            </p>
+            <p class="card-text">
+              <small class="text-muted"><strong>User Score</strong>: ${
+                item.vote_average > 0
+                  ? `${item.vote_average.toFixed(1) * 10}%`
+                  : 'NR'
+              }</small>
+            </p>
+          </div>`;
+
+    document.querySelector('#popular-movies').appendChild(div);
+  });
+}
+
 // Global Functions
 
 // Fetch data from TMDB API
@@ -668,6 +720,10 @@ function init() {
       displayTrending();
       // console.log(getDate());
       break;
+    case '/trending-today.html':
+      // console.log('Trending Movies/Shows Today');
+      displayTrendingToday();
+      break;
     case '/search.html':
       // console.log('Search');
       search();
@@ -677,4 +733,33 @@ function init() {
   highlightActiveLink();
 }
 
-document.addEventListener('DOMContentLoaded', init);
+// document.addEventListener('DOMContentLoaded', init);
+
+// Wait for DOM to be fully loaded
+document.addEventListener('DOMContentLoaded', function () {
+  // Initialize the app
+  init();
+
+  // Setup navigation
+  setupNavigation();
+});
+
+// Navigation setup function
+function setupNavigation() {
+  const btn = document.getElementById('menu-btn');
+  const mobileMenu = document.querySelector('.mobile-menu-items');
+
+  btn.addEventListener('click', function () {
+    btn.classList.toggle('open');
+    mobileMenu.classList.toggle('active');
+  });
+
+  // Scroll effect for navbar
+  window.addEventListener('scroll', function () {
+    if (window.scrollY > 0) {
+      navbar.classList.add('navbar-scroll');
+    } else {
+      navbar.classList.remove('navbar-scroll');
+    }
+  });
+}
